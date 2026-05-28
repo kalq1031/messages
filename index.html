@@ -6,7 +6,6 @@
   <title>Terminal // Birthday Letter</title>
   <style>
     :root {
-      --bg: #151515;
       --terminal-bg: #0d0f12;
       --terminal-top: #2b2b2b;
       --terminal-border: rgba(255, 255, 255, 0.12);
@@ -19,6 +18,7 @@
       --red: #ff5f57;
       --orange: #ffbd2e;
       --terminal-green: #28c840;
+      --error: #ff7b72;
     }
 
     * {
@@ -32,7 +32,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       color: var(--text);
       background:
         radial-gradient(circle at top left, rgba(255, 179, 217, 0.16), transparent 35%),
@@ -42,7 +42,7 @@
 
     .terminal-window {
       width: min(760px, 100%);
-      min-height: 560px;
+      max-height: min(680px, calc(100vh - 48px));
       border: 1px solid var(--terminal-border);
       border-radius: 18px;
       overflow: hidden;
@@ -50,14 +50,15 @@
       box-shadow:
         0 24px 80px rgba(0, 0, 0, 0.55),
         inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      animation: terminalDrop 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
     }
 
     .terminal-titlebar {
-      height: 44px;
+      height: 34px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 0 16px;
+      gap: 10px;
+      padding: 0 12px;
       background: linear-gradient(#393939, var(--terminal-top));
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       user-select: none;
@@ -65,13 +66,13 @@
 
     .window-controls {
       display: flex;
-      gap: 8px;
+      gap: 7px;
       flex: 0 0 auto;
     }
 
     .dot {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       display: inline-block;
     }
@@ -84,23 +85,53 @@
       flex: 1;
       text-align: center;
       color: #c9d1d9;
-      font-size: 0.82rem;
+      font-size: 0.74rem;
       letter-spacing: 0.2px;
-      transform: translateX(-30px);
+      transform: translateX(-27px);
     }
 
     .terminal-body {
-      min-height: 516px;
+      position: relative;
+      height: min(620px, calc(100vh - 82px));
       padding: 22px;
       overflow-y: auto;
       line-height: 1.65;
       font-size: 0.96rem;
+      letter-spacing: -0.01em;
+      cursor: text;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .terminal-body::before {
+      content: "";
+      position: sticky;
+      top: -22px;
+      display: block;
+      height: 1px;
+      margin: -22px -22px 21px;
+      background: linear-gradient(90deg, transparent, rgba(126, 231, 135, 0.5), transparent);
+      opacity: 0.5;
+      animation: scanPulse 2.6s ease-in-out infinite;
+    }
+
+    .terminal-body::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .terminal-body::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
     }
 
     .line {
       min-height: 1.65em;
       white-space: pre-wrap;
       word-break: break-word;
+      animation: lineIn 180ms ease-out both;
     }
 
     .muted { color: var(--muted); }
@@ -108,17 +139,20 @@
     .cyan { color: var(--cyan); }
     .pink { color: var(--pink); }
     .yellow { color: var(--yellow); }
+    .error { color: var(--error); }
 
     .prompt-line {
       display: flex;
       align-items: center;
       gap: 8px;
       min-height: 1.65em;
+      animation: lineIn 180ms ease-out both;
     }
 
     .prompt {
       color: var(--green);
       flex: 0 0 auto;
+      text-shadow: 0 0 12px rgba(126, 231, 135, 0.24);
     }
 
     .typed-input {
@@ -132,22 +166,19 @@
       height: 1.15em;
       transform: translateY(3px);
       background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.35);
       animation: blink 1s step-end infinite;
     }
 
-    .menu-card,
     .letter-card,
-    .echo-card {
+    .riddle-card {
       margin: 16px 0;
       padding: 16px;
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.035);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-
-    .menu-card {
-      border-left: 3px solid var(--cyan);
+      animation: cardReveal 420ms ease-out both;
     }
 
     .letter-card {
@@ -156,19 +187,13 @@
       line-height: 1.85;
     }
 
-    .echo-card {
+    .riddle-card {
       border-left: 3px solid var(--yellow);
+      color: #f8e3a3;
     }
 
-    .option {
-      color: var(--cyan);
-      margin: 4px 0;
-    }
-
-    .hint {
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 0.88rem;
+    .riddle-card .code-row {
+      color: #f8e3a3;
     }
 
     .letter-line {
@@ -176,13 +201,68 @@
       margin-bottom: 10px;
     }
 
-    .hidden {
-      display: none;
+    .mobile-input {
+      position: fixed;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      border: 0;
+      padding: 0;
+      pointer-events: none;
     }
 
     @keyframes blink {
       0%, 45% { opacity: 1; }
       46%, 100% { opacity: 0; }
+    }
+
+    @keyframes terminalDrop {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes lineIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes cardReveal {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+        filter: blur(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes scanPulse {
+      0%, 100% { opacity: 0.18; }
+      50% { opacity: 0.65; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
     }
 
     @media (max-width: 520px) {
@@ -192,19 +272,40 @@
       }
 
       .terminal-window {
-        min-height: calc(100vh - 24px);
+        max-height: calc(100vh - 24px);
         border-radius: 14px;
       }
 
-      .terminal-body {
-        padding: 16px;
-        font-size: 0.88rem;
+      .terminal-titlebar {
+        height: 30px;
+        padding: 0 10px;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
       }
 
       .title {
         text-align: left;
         transform: none;
-        font-size: 0.72rem;
+        font-size: 0.68rem;
+      }
+
+      .terminal-body {
+        height: calc(100vh - 54px);
+        padding: 16px;
+        font-size: 0.88rem;
+      }
+
+      .terminal-body::before {
+        top: -16px;
+        margin: -16px -16px 15px;
+      }
+
+      .prompt-line {
+        align-items: flex-start;
+        flex-wrap: wrap;
       }
     }
   </style>
@@ -217,40 +318,49 @@
         <span class="dot orange"></span>
         <span class="dot green"></span>
       </div>
-      <div class="title">birthday-letter — zsh — 80x24</div>
+      <div class="title">birthday-letter — zsh</div>
     </header>
 
-    <section id="terminal" class="terminal-body" aria-live="polite"></section>
+    <section id="terminal" class="terminal-body" aria-live="polite" tabindex="0"></section>
+    <input id="mobileInput" class="mobile-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Terminal command input" />
   </main>
 
   <script>
     const terminal = document.getElementById("terminal");
+    const mobileInput = document.getElementById("mobileInput");
 
     const state = {
-      mode: "booting",
       input: "",
       locked: true,
+      stage: "hello",
+      attempts: 0,
       letterOpened: false
     };
 
-    const letterContent = [
-      "Dear [Name],",
-      "Happy birthday, you lovely human ✨",
-      "I hope today feels soft, warm, and full of tiny happy surprises.",
-      "Thank you for being someone who makes ordinary days feel a little brighter.",
-      "May this year bring you more laughter, easier mornings, cozy nights, and dreams that quietly come true.",
+    // Letter content is Base64-encoded so the plain text is not directly visible in the source.
+    // This is playful obfuscation, not cryptographic security.
+    const encodedLetter = [
+      "RGVhciBbTmFtZV0s",
+      "SGFwcHkgYmlydGhkYXksIHlvdSBsb3ZlbHkgaHVtYW4g4pyo",
+      "SSBob3BlIHRvZGF5IGZlZWxzIHNvZnQsIHdhcm0sIGFuZCBmdWxsIG9mIHRpbnkgaGFwcHkgc3VycHJpc2VzLg==",
+      "VGhhbmsgeW91IGZvciBiZWluZyBzb21lb25lIHdobyBtYWtlcyBvcmRpbmFyeSBkYXlzIGZlZWwgYSBsaXR0bGUgYnJpZ2h0ZXIu",
+      "TWF5IHRoaXMgeWVhciBicmluZyB5b3UgbW9yZSBsYXVnaHRlciwgZWFzaWVyIG1vcm5pbmdzLCBjb3p5IG5pZ2h0cywgYW5kIGRyZWFtcyB0aGF0IHF1aWV0bHkgY29tZSB0cnVlLg==",
       "",
-      "With the biggest smile,",
-      "[Your Name]"
+      "V2l0aCB0aGUgYmlnZ2VzdCBzbWlsZSw=",
+      "W1lvdXIgTmFtZV0="
     ];
 
-    const cuteReplies = [
-      "awww, message received. sending you a pocket-sized hug ♡",
-      "that was adorable. terminal is blushing now >///<",
-      "cute phrase detected. deploying extra sparkles ✨✨✨",
-      "noted. saving this sweetness to heart_cache.txt",
-      "reply: you are made of stardust and warm tea energy 🌙",
-      "beep boop. emotional support terminal is proud of you ♡"
+    // Riddle facts: day = 31, month = 5, age = 27, name length = 9.
+    // Logic: 31 + 27 + 9 - 5 = 62.
+    // Binary: 62 = 0b111110.
+    const correctPasskeys = ["hbd-0b111110", "HBD-0b111110", "HBD-0B111110", "hbd-0B111110"];
+
+    const retryMessages = [
+      "incorrect passkey. try again — the compiler believes in you.",
+      "access denied, but only softly. hint: use all four constants.",
+      "segmentation fault in birthday.cute: hint -> decimal is not the final form.",
+      "still corrupted. hint: day + age + name_len - month.",
+      "almost there. convert the result to binary, then use HBD-0b<binary>."
     ];
 
     function sleep(ms) {
@@ -259,6 +369,20 @@
 
     function scrollToBottom() {
       terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function focusInput() {
+      terminal.focus({ preventScroll: true });
+      mobileInput.focus({ preventScroll: true });
+    }
+
+    function decodeLine(value) {
+      if (!value) return "";
+      return decodeURIComponent(escape(window.atob(value)));
+    }
+
+    function getLetterContent() {
+      return encodedLetter.map(decodeLine);
     }
 
     function createLine(text = "", className = "line") {
@@ -284,33 +408,20 @@
       return line;
     }
 
-    function showMenu() {
-      const menu = document.createElement("div");
-      menu.className = "menu-card";
-      menu.innerHTML = `
-        <div class="green">Birthday Terminal Menu</div>
-        <div class="option">[1] proceed</div>
-        <div class="option">[2] echo &lt;cute phrase&gt;</div>
-        <div class="option">[3] help</div>
-        <div class="hint">Type <span class="cyan">1</span> or <span class="cyan">proceed</span>, then press Enter. You can also type <span class="cyan">echo you are cute</span>.</div>
-      `;
-      terminal.appendChild(menu);
-      scrollToBottom();
-    }
-
-    function renderPrompt() {
+    function renderPrompt(label = "kalq@3105 ~ %") {
       removePrompt();
 
       const row = document.createElement("div");
       row.id = "activePrompt";
       row.className = "prompt-line";
       row.innerHTML = `
-        <span class="prompt">birthday@letter ~ %</span>
+        <span class="prompt">${label}</span>
         <span id="typedInput" class="typed-input"></span><span class="cursor" aria-hidden="true"></span>
       `;
       terminal.appendChild(row);
       syncPromptText();
       scrollToBottom();
+      focusInput();
     }
 
     function removePrompt() {
@@ -321,38 +432,74 @@
     function syncPromptText() {
       const typedInput = document.getElementById("typedInput");
       if (typedInput) typedInput.textContent = state.input;
+      mobileInput.value = state.input;
     }
 
     async function boot() {
       state.locked = true;
       await typeLine("Last login: today on ttys001", "line muted", 12);
-      await sleep(250);
-      await typeLine("> loading birthday_wishes.pkg", "line cyan", 18);
-      await sleep(250);
-      await typeLine("> status: ready to make someone smile", "line green", 18);
-      await sleep(350);
-      showMenu();
-      state.mode = "menu";
+      await sleep(220);
+      await typeLine("> booting bday_msg.service", "line cyan", 16);
+      await sleep(260);
+      await typeLine("> say hello to start", "line green", 18);
+      state.stage = "hello";
       state.locked = false;
       renderPrompt();
     }
 
-    async function runProceed() {
+    async function showRiddle() {
+      state.stage = "passkey";
+      await typeLine("> hello received", "line green", 16);
+      await sleep(320);
+      await typeLine("> ERROR: found corrupted content", "line error", 20);
+      await sleep(280);
+      await typeLine("> restore required: bday_msg.txt cannot be read", "line error", 16);
+      await sleep(420);
+
+      const card = document.createElement("div");
+      card.className = "riddle-card";
+      card.innerHTML = `
+        <div class="yellow">restore_hint.c</div>
+        <div class="muted">/* The passkey is hidden in four constants. */</div>
+        <br />
+        <div>Start with the day you arrived,</div>
+        <div>add the years you have breathed,</div>
+        <div>add the letters that make your name,</div>
+        <div>then subtract the month you survived.</div>
+        <br />
+        <div class="muted">/* Unlock format: HBD-0b&lt;binary&gt; */</div>
+        <br />
+      `;
+      terminal.appendChild(card);
+      scrollToBottom();
+      await sleep(300);
+      await typeLine("> enter passkey to restore session", "line cyan", 16);
+    }
+
+    async function renderLetter() {
       if (state.letterOpened) {
-        await typeLine("Letter already opened. It is still glowing softly below ♡", "line yellow");
+        await typeLine("The letter is already open and glowing softly ♡", "line yellow");
         return;
       }
 
       state.locked = true;
-      await typeLine("> ./read_letter.sh", "line muted", 12);
+      await typeLine("> passkey accepted", "line green", 18);
       await sleep(350);
-      await typeLine("> Rendering a heartfelt message...", "line cyan", 20);
+      await typeLine("> binary signature matched: 0b111110", "line green", 18);
+      await sleep(350);
+      await typeLine("> checksum repaired", "line green", 18);
+      await sleep(350);
+      await typeLine("> Happy birthday ✨", "line pink", 28);
+      await sleep(450);
+      await typeLine("> decrypting bday_msg.enc...", "line cyan", 20);
       await sleep(550);
 
       const card = document.createElement("div");
       card.className = "letter-card";
       terminal.appendChild(card);
       scrollToBottom();
+
+      const letterContent = getLetterContent();
 
       for (const text of letterContent) {
         if (!text) {
@@ -370,102 +517,101 @@
 
       await sleep(350);
       await typeLine("> The birthday wishes are here. Mission complete ✨", "line green", 18);
+      await sleep(300);
+      await typeLine("exited 0", "line muted", 18);
       state.letterOpened = true;
-      state.locked = false;
-      renderPrompt();
     }
 
-    async function runEcho(command) {
-      const phrase = command.replace(/^echo\s*/i, "").trim();
-
-      if (!phrase) {
-        await typeLine("Usage: echo <cute phrase>", "line yellow");
-        return;
-      }
-
-      const reply = cuteReplies[Math.floor(Math.random() * cuteReplies.length)];
-      const card = document.createElement("div");
-      card.className = "echo-card";
-      card.innerHTML = `
-        <div><span class="muted">you said:</span> <span class="pink"></span></div>
-        <div><span class="muted">terminal replied:</span> <span class="green"></span></div>
-      `;
-      terminal.appendChild(card);
-
-      const spans = card.querySelectorAll("span.pink, span.green");
-      await typeInto(spans[0], phrase, 18);
-      await sleep(220);
-      await typeInto(spans[1], reply, 18);
-    }
-
-    async function showHelp() {
-      await typeLine("Available commands:", "line green");
-      await typeLine("  1 / proceed          Open the birthday letter", "line muted", 8);
-      await typeLine("  echo <cute phrase>   Say something cute and get a cute reply", "line muted", 8);
-      await typeLine("  menu                 Show the menu again", "line muted", 8);
-      await typeLine("  clear                Clear the terminal", "line muted", 8);
-      await typeLine("  help                 Show this help text", "line muted", 8);
-    }
-
-    async function handleCommand(rawCommand) {
-      const command = rawCommand.trim();
-      const normalized = command.toLowerCase();
-
-      if (!command) return;
-
-      if (normalized === "1" || normalized === "proceed") {
-        await runProceed();
-        return;
-      }
-
-      if (normalized.startsWith("echo")) {
-        await runEcho(command);
-        return;
-      }
-
-      if (normalized === "2") {
-        await typeLine("Try: echo you are my favorite person", "line yellow");
-        return;
-      }
-
-      if (normalized === "3" || normalized === "help") {
-        await showHelp();
-        return;
-      }
-
-      if (normalized === "menu") {
-        showMenu();
-        return;
-      }
-
-      if (normalized === "clear") {
-        terminal.innerHTML = "";
-        showMenu();
+    async function handleHello(command) {
+      if (command.toLowerCase() === "hello") {
+        await showRiddle();
         return;
       }
 
       await typeLine(`command not found: ${command}`, "line yellow");
-      await typeLine("Type help to see available commands.", "line muted", 8);
+      await typeLine("Type hello to start.", "line muted", 8);
+    }
+
+    async function handlePasskey(command) {
+      if (correctPasskeys.includes(command)) {
+        await renderLetter();
+        state.stage = "done";
+        return;
+      }
+
+      const index = state.attempts % retryMessages.length;
+      state.attempts += 1;
+      await typeLine(`> ${retryMessages[index]}`, "line error", 14);
+    }
+
+    async function handleDone(command) {
+      if (command.toLowerCase() === "clear") {
+        terminal.innerHTML = "";
+        state.letterOpened = false;
+        state.attempts = 0;
+        await typeLine("> say hello to start", "line green", 8);
+        state.stage = "hello";
+        return;
+      }
+
+      await typeLine("session restored. the letter is already unlocked ♡", "line green", 12);
+    }
+
+    async function handleCommand(rawCommand) {
+      const command = rawCommand.trim();
+
+      if (!command) return;
+
+      if (command.toLowerCase() === "clear") {
+        terminal.innerHTML = "";
+        state.letterOpened = false;
+        state.attempts = 0;
+        await typeLine("> say hello to start", "line green", 8);
+        state.stage = "hello";
+        return;
+      }
+
+      if (state.stage === "hello") {
+        await handleHello(command);
+        return;
+      }
+
+      if (state.stage === "passkey") {
+        await handlePasskey(command);
+        return;
+      }
+
+      await handleDone(command);
+    }
+
+    async function submitCommand(command) {
+      if (state.locked) return;
+
+      state.input = "";
+      syncPromptText();
+      removePrompt();
+
+      const promptLabel = state.stage === "passkey" ? "passkey:" : "kalq@3105 ~ %";
+      createLine(`${promptLabel} ${command}`, "line");
+
+      state.locked = true;
+      await handleCommand(command);
+      state.locked = state.stage === "done";
+
+      if (!document.getElementById("activePrompt") && state.stage !== "done") {
+        const nextPromptLabel = state.stage === "passkey" ? "passkey:" : "kalq@3105 ~ %";
+        renderPrompt(nextPromptLabel);
+      }
     }
 
     document.addEventListener("keydown", async event => {
       if (state.locked) return;
 
+      if (event.target === mobileInput) return;
+
       if (event.key === "Enter") {
         event.preventDefault();
-        const command = state.input;
-        state.input = "";
-
-        removePrompt();
-        createLine(`birthday@letter ~ % ${command}`, "line");
-
-        state.locked = true;
-        await handleCommand(command);
-        state.locked = false;
-
-        if (!document.getElementById("activePrompt")) {
-          renderPrompt();
-        }
+        await submitCommand(state.input);
         return;
       }
 
@@ -483,9 +629,23 @@
       }
     });
 
-    terminal.addEventListener("click", () => {
-      renderPrompt();
+    mobileInput.addEventListener("input", () => {
+      if (state.locked) return;
+      state.input = mobileInput.value;
+      syncPromptText();
     });
+
+    mobileInput.addEventListener("keydown", async event => {
+      if (state.locked) return;
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        await submitCommand(state.input);
+      }
+    });
+
+    terminal.addEventListener("click", focusInput);
+    terminal.addEventListener("touchstart", focusInput, { passive: true });
 
     boot();
   </script>
