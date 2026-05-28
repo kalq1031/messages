@@ -494,10 +494,36 @@
       return line;
     }
 
-    async function typeBoxLine(parent, prefix, text, suffix = "") {
-      const line = appendBoxLine(parent, prefix, "box-line");
+    function wrapText(text, maxWidth = 46) {
+      if (!text) return [""];
+
+      const words = text.split(" ");
+      const lines = [];
+      let current = "";
+
+      for (const word of words) {
+        const next = current ? `${current} ${word}` : word;
+
+        if (next.length > maxWidth && current) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = next;
+        }
+      }
+
+      if (current) lines.push(current);
+      return lines;
+    }
+
+    function frameLine(text = "", width = 46) {
+      return `│ ${text.padEnd(width, " ")} │`;
+    }
+
+    async function typeFramedLine(parent, text, width = 46) {
+      const line = appendBoxLine(parent, "│ ", "box-line");
       await typeInto(line, text, 22);
-      line.textContent += suffix;
+      line.textContent = frameLine(text, width);
       scrollToBottom();
     }
 
@@ -552,7 +578,7 @@
       const card = document.createElement("pre");
       card.className = "riddle-card";
       card.textContent = [
-        "╔═══ restore_hint.c ═════════════════════════════╗",
+        "╔═══ answer_this.ok ═════════════════════════════╗",
         "│ The passkey is hidden in four constants.       │",
         "│                                                │",
         "│ Start with the day you arrived,                │",
@@ -593,28 +619,31 @@
       terminal.appendChild(card);
       scrollToBottom();
 
+      const frameWidth = 46;
       appendBoxLine(card, "╔═══ bday_msg.txt ═══════════════════════════════╗", "box-line box-border");
-      appendBoxLine(card, "│ ┌─✉ MESSAGE                                     │", "box-line box-title");
-      appendBoxLine(card, "│ ├────────────────────────────────────────────  │", "box-line box-border");
+      appendBoxLine(card, frameLine("MESSAGE", frameWidth), "box-line box-title");
+      appendBoxLine(card, frameLine("", frameWidth), "box-line box-border");
 
       const letterContent = getLetterContent();
 
       for (const text of letterContent) {
         if (!text) {
-          appendBoxLine(card, "│ │", "box-line");
+          appendBoxLine(card, frameLine("", frameWidth), "box-line");
           await sleep(250);
           continue;
         }
 
-        await typeBoxLine(card, "│ │ ", text);
+        const wrappedLines = wrapText(text, frameWidth);
+        for (const wrappedLine of wrappedLines) {
+          await typeFramedLine(card, wrappedLine, frameWidth);
+        }
         await sleep(260);
       }
 
-      appendBoxLine(card, "│ └────────────────────────────────────────────  │", "box-line box-border");
       appendBoxLine(card, "╚════════════════════════════════════════════════╝", "box-line box-border");
 
       await sleep(350);
-      await typeLine("> The birthday wishes are here. Mission complete ✨", "line green", 18);
+      await typeLine("> Happy birthday, have a great day✨", "line green", 18);
       await sleep(300);
       await typeLine("exited 0", "line muted", 18);
       state.letterOpened = true;
