@@ -3,65 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday!</title>
+    <title>Terminal // Birthday</title>
     <style>
-        /* Sleek Dark Mode Reset */
+        /* Modern Monospace Terminal Styling */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #000000; /* Pure Black Background */
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            background-color: #000000; /* Pure Black */
             color: #ffffff;            /* Crisp White Text */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             box-sizing: border-box;
-            overflow: hidden;
         }
 
         .container {
             text-align: center;
-            max-width: 500px;
+            max-width: 450px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Typing Animation Setup */
-        .typing-header {
-            font-size: 2.3rem;
-            font-weight: 300;
-            margin-bottom: 35px;
-            letter-spacing: -0.5px;
-            
-            /* Hide the text initially, keep it on one line */
-            overflow: hidden;
-            white-space: nowrap; 
-            border-right: 2px solid rgba(255, 255, 255, 0.75); /* The blinking cursor */
-            width: 0; 
+        /* Terminal Window Box for the Greeting */
+        .terminal-window {
+            border: 1px solid #333333; /* Dark gray code border */
+            background-color: #050505;  /* Extremely subtle depth change */
+            padding: 24px;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 30px;
+            text-align: left; /* Terminal prompts are traditionally left-aligned */
         }
 
-        /* Triggered via JS after the alert is dismissed */
-        .typing-header.start-typing {
+        /* Typing Animation Header */
+        .typing-header {
+            font-size: 1.5rem; /* Scaled down for a cleaner desktop look */
+            font-weight: 400;
+            margin: 0;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            
+            /* Typing mechanics */
+            overflow: hidden;
+            white-space: nowrap; 
+            border-right: 2px solid rgba(255, 255, 255, 0.75); /* Blinking cursor */
+            width: 0; 
             animation: 
-                typing 2.5s steps(22, end) forwards,
+                typing 2s steps(22, end) forwards,
                 blink-cursor 0.75s step-end infinite;
         }
 
-        /* Minimal White Button for Contrast */
+        /* Minimalist Terminal Action Button */
         .btn {
-            background-color: #ffffff;
-            color: #000000;
-            border: none;
-            padding: 12px 26px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            border-radius: 6px;
+            background-color: transparent;
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            font-family: inherit; /* Keeps the monospace font */
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            border-radius: 4px;
             cursor: pointer;
             opacity: 0; /* Hidden until typing finishes */
-            transition: background-color 0.2s, transform 0.1s, opacity 0.5s ease;
+            transition: background-color 0.2s, color 0.2s, opacity 0.5s ease;
         }
 
         .btn.show-btn {
@@ -69,24 +77,24 @@
         }
 
         .btn:hover {
-            background-color: #e0e0e0;
+            background-color: #ffffff;
+            color: #000000;
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Elegant Letter Box */
+        /* Elegant Code-Style Letter Box */
         .letter-box {
             display: none;
-            margin-top: 20px;
-            padding: 30px;
-            background: #0a0a0a; /* Slightly lighter black for depth */
-            border: 1px solid #1a1a1a;
-            border-radius: 8px;
+            width: 100%;
+            margin-top: 25px;
+            padding: 24px;
+            background: #000000;
+            border: 1px solid #222222;
+            border-radius: 6px;
             text-align: left;
             line-height: 1.6;
-            color: #ccc; /* Softer white for easier reading */
+            color: #aaaaaa; /* Muted gray for code-reading comfort */
+            font-size: 0.9rem;
+            box-sizing: border-box;
             opacity: 0;
             transition: opacity 0.6s ease;
         }
@@ -96,8 +104,12 @@
             opacity: 1;
         }
 
-        p {
-            margin-bottom: 15px;
+        .letter-line {
+            margin-bottom: 12px;
+        }
+        
+        .accent-text {
+            color: #555555; /* Dimmed line markers or comments */
         }
 
         /* Animation Keyframes */
@@ -110,23 +122,46 @@
             from, to { border-color: transparent }
             50% { border-color: rgba(255, 255, 255, 0.75); }
         }
+
+        /* --- MOBILE MEDIA QUERY --- */
+        @media (max-width: 480px) {
+            .typing-header {
+                font-size: 1.15rem; /* Noticeably smaller on mobile to keep it on one line */
+            }
+            
+            .terminal-window {
+                padding: 16px; /* Tighter padding for mobile screens */
+            }
+
+            .letter-box {
+                font-size: 0.8rem; /* Keeps long letters clean and crisp on mobile */
+                padding: 16px;
+            }
+
+            .btn {
+                font-size: 0.8rem;
+                padding: 8px 16px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- The Header with Typing Effect Container -->
-        <h1 id="greeting" class="typing-header">Happy Birthday! ✨</h1>
+        <div class="terminal-window">
+            <h1 id="greeting" class="typing-header">> Happy Birthday! ✨</h1>
+        </div>
         
-        <!-- Action Button -->
-        <button id="actionBtn" class="btn">Read My Letter</button>
+        <button id="actionBtn" class="btn">_run letter.sh</button>
 
-        <!-- Hidden Letter Content -->
         <div id="letterBox" class="letter-box">
-            <p>Dear [Name],</p>
-            <p>Write your heartfelt birthday message right here. Because this file lives in your private repository and runs locally on your machine, you can make this letter as personal or secret as you want!</p>
-            <p>Wishing you the absolute best day ever.</p>
-            <p>Best,<br>[Your Name]</p>
+            <div class="letter-line"><span class="accent-text">// Main Content</span></div>
+            <div class="letter-line">Dear [Name],</div>
+            <div class="letter-line">Write your heartfelt birthday message right here. Because this file lives in your private repository and runs locally on your machine, you can make this letter as personal or secret as you want!</div>
+            <div class="letter-line">Wishing you the absolute best day ever.</div>
+            <br>
+            <div class="letter-line">Best,</div>
+            <div class="letter-line">[Your Name]</div>
         </div>
     </div>
 
@@ -135,25 +170,16 @@
         const actionBtn = document.getElementById('actionBtn');
         const letterBox = document.getElementById('letterBox');
 
-        // 1. Alert pops up first
+        // Trigger typing effect instantly on load (No more popup!)
         window.addEventListener('DOMContentLoaded', () => {
+            // Smoothly reveal button after typing completes (2 seconds)
             setTimeout(() => {
-                alert("🎉 Happy Birthday! Hope you have an amazing day ahead!");
-                
-                // 2. Start the typing animation ONLY after they click "OK"
-                greeting.classList.add('start-typing');
-                
-                // 3. Fade in the button smoothly right after the typing finishes (2.5 seconds)
-                setTimeout(() => {
-                    actionBtn.classList.add('show-btn');
-                    // Remove the blinking cursor line once done typing
-                    greeting.style.borderRight = "none";
-                }, 2500);
-
-            }, 100);
+                actionBtn.classList.add('show-btn');
+                greeting.style.borderRight = "none"; /* Removes the cursor stamp at the end */
+            }, 2000);
         });
 
-        // 4. Handle button click to reveal the letter
+        // Click event to unveil letter
         actionBtn.addEventListener('click', () => {
             letterBox.classList.add('show');
             actionBtn.style.display = 'none'; 
