@@ -27,21 +27,40 @@
             align-items: flex-start;
         }
 
-        /* Plaintext | borders */
-        .border-line {
-            color: #444444;
-            font-size: 1.1rem;
-            letter-spacing: -0.5px;
-            margin: 8px 0;
-            white-space: pre;
-            overflow: hidden;
+        /* --- RESPONSIVE ASCII BORDERS --- */
+        .ascii-container {
+            border-top: 1.5px dashed #666666;    /* Mimics - */
+            border-bottom: 1.5px dashed #666666; /* Mimics - */
+            border-left: 1.5px solid #666666;    /* Mimics | */
+            border-right: 1.5px solid #666666;   /* Mimics | */
+            position: relative;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 15px;
         }
+
+        /* ASCII Corners */
+        .corner {
+            position: absolute;
+            background: #000000;
+            color: #666666;
+            font-size: 1.1rem;
+            line-height: 1;
+            padding: 0 4px;
+        }
+        
+        /* Corner Positioning */
+        .top-left { top: -9px; left: -6px; }
+        .top-right { top: -9px; right: -6px; }
+        .bottom-left { bottom: -9px; left: -6px; }
+        .bottom-right { bottom: -9px; right: -6px; }
 
         /* Initial Header */
         .typing-header {
             font-size: 1.4rem;
             font-weight: 400;
-            margin: 10px 0;
+            margin: 0;
             overflow: hidden;
             white-space: nowrap;
             border-right: 2px solid rgba(255, 255, 255, 0.75);
@@ -53,7 +72,7 @@
 
         /* Action Button */
         .btn-wrapper {
-            margin: 15px 0;
+            margin: 10px 0 20px 0;
             opacity: 0;
             transition: opacity 0.5s ease;
         }
@@ -81,146 +100,50 @@
         .log-line {
             font-size: 0.95rem;
             color: #888888;
-            margin-top: 15px;
+            margin-bottom: 15px;
             min-height: 1.2rem;
+            display: none; /* Hidden until button click */
         }
 
-        #successLog {
-            color: #ffffff; 
+        /* Triggers via JS after letter finishes */
+        .success-text {
+            color: #ffffff !important; 
             font-weight: bold; 
-            margin-top: 10px;
-            margin-bottom: 20px;
         }
 
-        /* Larger Font for the Letter Content */
+        /* --- CUTE PAPER BORDER FOR THE LETTER --- */
+        .letter-paper {
+            display: none; /* Hidden until button click */
+            border-top: 1.5px dashed #bbbbbb; 
+            border-bottom: 1.5px dashed #bbbbbb;
+            border-left: 1.5px solid #bbbbbb;
+            border-right: 1.5px solid #bbbbbb;
+            padding: 25px 20px;
+        }
+
+        /* Cute asterisk corners for the paper */
+        .letter-paper .corner {
+            color: #bbbbbb;
+        }
+
+        /* Letter Content Layout */
         .letter-box {
             width: 100%;
-            margin-top: 10px;
             line-height: 1.8;
             color: #dddddd; 
-            font-size: 1.15rem; /* Noticeably larger for easy reading */
+            font-size: 1.15rem; 
         }
 
         .letter-line {
             margin-bottom: 15px;
-            min-height: 1.5rem; /* Prevents layout jumping while empty */
+            min-height: 1.5rem; 
         }
 
-        /* CSS Animations for the very first header */
+        /* CSS Animations */
         @keyframes typing-css {
             from { width: 0 }
             to { width: 100% }
         }
 
         @keyframes blink-cursor {
-            from, to { border-color: transparent }
-            50% { border-color: rgba(255, 255, 255, 0.75); }
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 480px) {
-            .typing-header { font-size: 1.1rem; }
-            .letter-box { font-size: 1.05rem; }
-            .border-line { font-size: 0.9rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="border-line">||||||||||||||||||||||||||||||||||||||||||||||||||||||</div>
-
-        <div>
-            <h1 id="greeting" class="typing-header">> Happy Birthday! ✨</h1>
-        </div>
-
-        <div class="border-line">||||||||||||||||||||||||||||||||||||||||||||||||||||||</div>
-        
-        <div id="btnWrapper" class="btn-wrapper">
-            <button id="actionBtn" class="btn">[ Run execution_sequence.sh ]</button>
-        </div>
-
-        <div id="renderingLog" class="log-line"></div>
-        <div id="successLog" class="log-line"></div>
-
-        <div id="letterBox" class="letter-box"></div>
-    </div>
-
-    <script>
-        const greeting = document.getElementById('greeting');
-        const btnWrapper = document.getElementById('btnWrapper');
-        const actionBtn = document.getElementById('actionBtn');
-        const renderingLog = document.getElementById('renderingLog');
-        const successLog = document.getElementById('successLog');
-        const letterBox = document.getElementById('letterBox');
-
-        // This is your actual letter content. 
-        // Add as many strings to this list as you need. Leave an empty string "" for a blank line.
-        const letterContent = [
-            "Dear [Name],",
-            "Write your heartfelt birthday message right here.",
-            "Because this file lives in your private repository, you can make this letter as personal or secret as you want!",
-            "Wishing you the absolute best day ever.",
-            "",
-            "Best,",
-            "[Your Name]"
-        ];
-
-        // Helper function to type text out letter-by-letter
-        async function typeText(element, text, speed = 40) {
-            for (let i = 0; i < text.length; i++) {
-                element.innerHTML += text.charAt(i);
-                // Pause execution for 'speed' milliseconds
-                await new Promise(resolve => setTimeout(resolve, speed));
-            }
-        }
-
-        // Show the button after the initial CSS header finishes typing
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                btnWrapper.classList.add('show-btn');
-                greeting.style.borderRight = "none"; // Remove cursor from header
-            }, 1600);
-        });
-
-        // The main sequence that runs when the button is clicked
-        actionBtn.addEventListener('click', async () => {
-            // 1. Hide the button
-            btnWrapper.style.display = 'none';
             
-            // 2. Type the rendering message
-            await typeText(renderingLog, "> Rendering a heartfelt message...", 40);
-            
-            // Pause for dramatic effect
-            await new Promise(resolve => setTimeout(resolve, 800)); 
-            
-            // 3. Hide rendering message, type the success message
-            renderingLog.style.display = 'none';
-            await typeText(successLog, "> The birthday wishes are here:", 40);
-            
-            // Pause before starting the letter
-            await new Promise(resolve => setTimeout(resolve, 400)); 
-
-            // 4. Loop through the letterContent array and type it line-by-line
-            for (let i = 0; i < letterContent.length; i++) {
-                if (letterContent[i] === "") {
-                    // If it's an empty string, add a line break
-                    letterBox.appendChild(document.createElement('br'));
-                } else {
-                    // Create a new div for the text line
-                    const lineDiv = document.createElement('div');
-                    lineDiv.className = 'letter-line';
-                    letterBox.appendChild(lineDiv);
-                    
-                    // Type the line slightly faster (25ms per letter)
-                    await typeText(lineDiv, letterContent[i], 25);
-                }
-                
-                // Brief pause between lines
-                await new Promise(resolve => setTimeout(resolve, 300));
-            }
-        });
-    </script>
-
-</body>
-</html>
