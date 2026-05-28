@@ -27,36 +27,45 @@
             align-items: flex-start;
         }
 
-        /* --- RESPONSIVE ASCII BORDERS --- */
-        .ascii-container {
-            border-top: 1.5px dashed #666666;    /* Mimics - */
-            border-bottom: 1.5px dashed #666666; /* Mimics - */
-            border-left: 1.5px solid #666666;    /* Mimics | */
-            border-right: 1.5px solid #666666;   /* Mimics | */
-            position: relative;
-            padding: 20px;
+        /* --- PURE TEXT ASCII BORDERS --- */
+        .ascii-box {
             width: 100%;
-            box-sizing: border-box;
             margin-bottom: 15px;
         }
 
-        /* ASCII Corners */
-        .corner {
-            position: absolute;
-            background: #000000;
-            color: #666666;
+        /* Top and bottom rows with literal + and - characters */
+        .ascii-edge {
+            display: flex;
+            color: #777777;
             font-size: 1.1rem;
             line-height: 1;
-            padding: 0 4px;
         }
-        
-        /* Corner Positioning */
-        .top-left { top: -9px; left: -6px; }
-        .top-right { top: -9px; right: -6px; }
-        .bottom-left { bottom: -9px; left: -6px; }
-        .bottom-right { bottom: -9px; right: -6px; }
 
-        /* Initial Header */
+        /* This forces the dashes to perfectly fill the space without wrapping */
+        .dashes {
+            flex-grow: 1;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        /* The vertical sides (|) */
+        .ascii-body {
+            border-left: 1.5px solid #777777; 
+            border-right: 1.5px solid #777777;
+            margin: 0 4px; /* Perfectly aligns the side walls with the center of the + corner */
+            padding: 15px 20px;
+        }
+
+        /* --- CUTE LETTER PAPER BORDERS --- */
+        .cute-edge {
+            color: #bbbbbb; /* Slightly brighter for the letter */
+        }
+        .cute-body {
+            border-color: #bbbbbb;
+            padding: 20px;
+        }
+
+        /* Header Animation */
         .typing-header {
             font-size: 1.4rem;
             font-weight: 400;
@@ -72,7 +81,7 @@
 
         /* Action Button */
         .btn-wrapper {
-            margin: 10px 0 20px 0;
+            margin: 10px 0 20px 4px;
             opacity: 0;
             transition: opacity 0.5s ease;
         }
@@ -90,40 +99,26 @@
             cursor: pointer;
             padding: 0;
             text-decoration: underline;
+            letter-spacing: 0.5px;
         }
 
         .btn:hover {
             color: #aaaaaa;
         }
 
-        /* Loading / Processing Logs */
+        /* Logs */
         .log-line {
             font-size: 0.95rem;
             color: #888888;
             margin-bottom: 15px;
+            margin-left: 4px;
             min-height: 1.2rem;
-            display: none; /* Hidden until button click */
+            display: none; 
         }
 
-        /* Triggers via JS after letter finishes */
         .success-text {
             color: #ffffff !important; 
             font-weight: bold; 
-        }
-
-        /* --- CUTE PAPER BORDER FOR THE LETTER --- */
-        .letter-paper {
-            display: none; /* Hidden until button click */
-            border-top: 1.5px dashed #bbbbbb; 
-            border-bottom: 1.5px dashed #bbbbbb;
-            border-left: 1.5px solid #bbbbbb;
-            border-right: 1.5px solid #bbbbbb;
-            padding: 25px 20px;
-        }
-
-        /* Cute asterisk corners for the paper */
-        .letter-paper .corner {
-            color: #bbbbbb;
         }
 
         /* Letter Content Layout */
@@ -146,4 +141,132 @@
         }
 
         @keyframes blink-cursor {
+            from, to { border-color: transparent }
+            50% { border-color: rgba(255, 255, 255, 0.75); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .typing-header { font-size: 1.1rem; }
+            .letter-box { font-size: 1.05rem; }
+            .ascii-body { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="ascii-box">
+            <div class="ascii-edge">
+                <span>+</span><span class="dashes">------------------------------------------------------------------------------------------</span><span>+</span>
+            </div>
             
+            <div class="ascii-body">
+                <h1 id="greeting" class="typing-header">> Happy Birthday! ✨</h1>
+            </div>
+            
+            <div class="ascii-edge">
+                <span>+</span><span class="dashes">------------------------------------------------------------------------------------------</span><span>+</span>
+            </div>
+        </div>
+        
+        <div id="btnWrapper" class="btn-wrapper">
+            <button id="actionBtn" class="btn">[ > read_letter.sh ]</button>
+        </div>
+
+        <div id="renderingLog" class="log-line"></div>
+
+        <div id="letterPaper" class="ascii-box" style="display: none;">
+            <div class="ascii-edge cute-edge">
+                <span>*</span><span class="dashes">------------------------------------------------------------------------------------------</span><span>*</span>
+            </div>
+            
+            <div class="ascii-body cute-body">
+                <div id="letterBox" class="letter-box"></div>
+            </div>
+            
+            <div class="ascii-edge cute-edge">
+                <span>*</span><span class="dashes">------------------------------------------------------------------------------------------</span><span>*</span>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        const greeting = document.getElementById('greeting');
+        const btnWrapper = document.getElementById('btnWrapper');
+        const actionBtn = document.getElementById('actionBtn');
+        const renderingLog = document.getElementById('renderingLog');
+        const letterPaper = document.getElementById('letterPaper');
+        const letterBox = document.getElementById('letterBox');
+
+        // Edit your letter content here!
+        const letterContent = [
+            "Dear [Name],",
+            "Write your heartfelt birthday message right here.",
+            "Because this file lives in your private repository, you can make this letter as personal or secret as you want!",
+            "Wishing you the absolute best day ever.",
+            "",
+            "Best,",
+            "[Your Name]"
+        ];
+
+        // Core typing logic
+        async function typeText(element, text, speed = 35) {
+            for (let i = 0; i < text.length; i++) {
+                element.innerHTML += text.charAt(i);
+                await new Promise(resolve => setTimeout(resolve, speed));
+            }
+        }
+
+        // 1. Reveal button when header is done typing
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                btnWrapper.classList.add('show-btn');
+                greeting.style.borderRight = "none";
+            }, 1600);
+        });
+
+        // 2. Sequence triggered on button click
+        actionBtn.addEventListener('click', async () => {
+            // Hide the button link
+            btnWrapper.style.display = 'none';
+            
+            // Show the log and type the initial rendering message
+            renderingLog.style.display = 'block';
+            await typeText(renderingLog, "> Rendering a heartfelt message...", 35);
+            
+            // Brief pause before revealing the cute letter border
+            await new Promise(resolve => setTimeout(resolve, 600)); 
+            
+            // Reveal the cute paper border (empty at first)
+            letterPaper.style.display = 'block';
+
+            // Loop through and type the actual letter line by line
+            for (let i = 0; i < letterContent.length; i++) {
+                if (letterContent[i] === "") {
+                    letterBox.appendChild(document.createElement('br'));
+                } else {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.className = 'letter-line';
+                    letterBox.appendChild(lineDiv);
+                    
+                    // Type the letter text rapidly
+                    await typeText(lineDiv, letterContent[i], 25);
+                }
+                
+                // Small breath between sentences
+                await new Promise(resolve => setTimeout(resolve, 350));
+            }
+
+            // 3. ONLY UPDATE LOG TEXT AFTER LETTER IS FULLY FINISHED
+            await new Promise(resolve => setTimeout(resolve, 500));
+            renderingLog.innerHTML = "> The birthday wishes are here:";
+            renderingLog.classList.add('success-text');
+        });
+    </script>
+
+</body>
+</html>
+
