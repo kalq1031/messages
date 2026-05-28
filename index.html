@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <style>
+        /* Sleek Dark Mode Reset */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000000; /* Pure Black Background */
+            color: #ffffff;            /* Crisp White Text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Typing Animation Setup */
+        .typing-header {
+            font-size: 2.3rem;
+            font-weight: 300;
+            margin-bottom: 35px;
+            letter-spacing: -0.5px;
+            
+            /* Hide the text initially, keep it on one line */
+            overflow: hidden;
+            white-space: nowrap; 
+            border-right: 2px solid rgba(255, 255, 255, 0.75); /* The blinking cursor */
+            width: 0; 
+        }
+
+        /* Triggered via JS after the alert is dismissed */
+        .typing-header.start-typing {
+            animation: 
+                typing 2.5s steps(22, end) forwards,
+                blink-cursor 0.75s step-end infinite;
+        }
+
+        /* Minimal White Button for Contrast */
+        .btn {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 12px 26px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            opacity: 0; /* Hidden until typing finishes */
+            transition: background-color 0.2s, transform 0.1s, opacity 0.5s ease;
+        }
+
+        .btn.show-btn {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Elegant Letter Box */
+        .letter-box {
+            display: none;
+            margin-top: 20px;
+            padding: 30px;
+            background: #0a0a0a; /* Slightly lighter black for depth */
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            text-align: left;
+            line-height: 1.6;
+            color: #ccc; /* Softer white for easier reading */
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .letter-box.show {
+            display: block;
+            opacity: 1;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        /* Animation Keyframes */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-cursor {
+            from, to { border-color: transparent }
+            50% { border-color: rgba(255, 255, 255, 0.75); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- The Header with Typing Effect Container -->
+        <h1 id="greeting" class="typing-header">Happy Birthday! ✨</h1>
+        
+        <!-- Action Button -->
+        <button id="actionBtn" class="btn">Read My Letter</button>
+
+        <!-- Hidden Letter Content -->
+        <div id="letterBox" class="letter-box">
+            <p>Dear [Name],</p>
+            <p>Write your heartfelt birthday message right here. Because this file lives in your private repository and runs locally on your machine, you can make this letter as personal or secret as you want!</p>
+            <p>Wishing you the absolute best day ever.</p>
+            <p>Best,<br>[Your Name]</p>
+        </div>
+    </div>
+
+    <script>
+        const greeting = document.getElementById('greeting');
+        const actionBtn = document.getElementById('actionBtn');
+        const letterBox = document.getElementById('letterBox');
+
+        // 1. Alert pops up first
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                alert("🎉 Happy Birthday! Hope you have an amazing day ahead!");
+                
+                // 2. Start the typing animation ONLY after they click "OK"
+                greeting.classList.add('start-typing');
+                
+                // 3. Fade in the button smoothly right after the typing finishes (2.5 seconds)
+                setTimeout(() => {
+                    actionBtn.classList.add('show-btn');
+                    // Remove the blinking cursor line once done typing
+                    greeting.style.borderRight = "none";
+                }, 2500);
+
+            }, 100);
+        });
+
+        // 4. Handle button click to reveal the letter
+        actionBtn.addEventListener('click', () => {
+            letterBox.classList.add('show');
+            actionBtn.style.display = 'none'; 
+        });
+    </script>
+
+</body>
+</html>
