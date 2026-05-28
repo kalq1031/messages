@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal // Birthday</title>
+    <title>Terminal // Letter</title>
     <style>
-        /* Modern Monospace Terminal Styling */
+        /* Modern Monospace Reset */
         body {
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-            background-color: #000000; /* Pure Black */
-            color: #ffffff;            /* Crisp White Text */
+            background-color: #000000;
+            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -20,99 +20,92 @@
         }
 
         .container {
-            text-align: center;
-            max-width: 450px;
+            max-width: 500px;
             width: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start; /* Left-aligned terminal style */
         }
 
-        /* Terminal Window Box for the Greeting */
-        .terminal-window {
-            border: 1px solid #333333; /* Dark gray code border */
-            background-color: #050505;  /* Extremely subtle depth change */
-            padding: 24px;
-            border-radius: 6px;
+        /* Border Framework built out of plaintext pipelines */
+        .border-line {
+            color: #333333; /* Dimmed pipeline borders */
+            font-size: 1.1rem;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin: 4px 0;
+            white-space: pre;
+        }
+
+        /* Header block styles */
+        .header-block {
+            margin-bottom: 25px;
             width: 100%;
-            box-sizing: border-box;
-            margin-bottom: 30px;
-            text-align: left; /* Terminal prompts are traditionally left-aligned */
         }
 
-        /* Typing Animation Header */
         .typing-header {
-            font-size: 1.5rem; /* Scaled down for a cleaner desktop look */
+            font-size: 1.4rem;
             font-weight: 400;
             margin: 0;
-            letter-spacing: -0.5px;
-            color: #ffffff;
-            
-            /* Typing mechanics */
             overflow: hidden;
             white-space: nowrap; 
-            border-right: 2px solid rgba(255, 255, 255, 0.75); /* Blinking cursor */
-            width: 0; 
+            border-right: 2px solid rgba(255, 255, 255, 0.75);
+            width: 0;
             animation: 
-                typing 2s steps(22, end) forwards,
+                typing 1.8s steps(22, end) forwards,
                 blink-cursor 0.75s step-end infinite;
         }
 
-        /* Minimalist Terminal Action Button */
-        .btn {
-            background-color: transparent;
-            color: #ffffff;
-            border: 1px solid #ffffff;
-            font-family: inherit; /* Keeps the monospace font */
-            padding: 10px 20px;
-            font-size: 0.85rem;
-            border-radius: 4px;
-            cursor: pointer;
-            opacity: 0; /* Hidden until typing finishes */
-            transition: background-color 0.2s, color 0.2s, opacity 0.5s ease;
+        /* Plaintext border interactive button */
+        .btn-wrapper {
+            margin: 10px 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
-        .btn.show-btn {
+        .btn-wrapper.show-btn {
             opacity: 1;
+        }
+
+        .btn {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
         }
 
         .btn:hover {
-            background-color: #ffffff;
-            color: #000000;
+            color: #aaaaaa;
         }
 
-        /* Elegant Code-Style Letter Box */
+        /* System Action Logs */
+        .log-line {
+            font-size: 0.95rem;
+            color: #666666;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* Enhanced Content Letter Box */
         .letter-box {
             display: none;
             width: 100%;
-            margin-top: 25px;
-            padding: 24px;
-            background: #000000;
-            border: 1px solid #222222;
-            border-radius: 6px;
-            text-align: left;
-            line-height: 1.6;
-            color: #aaaaaa; /* Muted gray for code-reading comfort */
-            font-size: 0.9rem;
+            margin-top: 20px;
+            line-height: 1.7;
+            color: #ffffff; 
+            font-size: 1.1rem; /* Noticeably larger font sizing for the letter screen */
             box-sizing: border-box;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-        }
-
-        .letter-box.show {
-            display: block;
-            opacity: 1;
         }
 
         .letter-line {
-            margin-bottom: 12px;
-        }
-        
-        .accent-text {
-            color: #555555; /* Dimmed line markers or comments */
+            margin-bottom: 14px;
         }
 
-        /* Animation Keyframes */
+        /* Keyframes */
         @keyframes typing {
             from { width: 0 }
             to { width: 100% }
@@ -123,24 +116,13 @@
             50% { border-color: rgba(255, 255, 255, 0.75); }
         }
 
-        /* --- MOBILE MEDIA QUERY --- */
+        /* Mobile Viewport Management */
         @media (max-width: 480px) {
             .typing-header {
-                font-size: 1.15rem; /* Noticeably smaller on mobile to keep it on one line */
+                font-size: 1.1rem;
             }
-            
-            .terminal-window {
-                padding: 16px; /* Tighter padding for mobile screens */
-            }
-
             .letter-box {
-                font-size: 0.8rem; /* Keeps long letters clean and crisp on mobile */
-                padding: 16px;
-            }
-
-            .btn {
-                font-size: 0.8rem;
-                padding: 8px 16px;
+                font-size: 1rem; /* Slightly balanced scaling down for mobile layout safety */
             }
         }
     </style>
@@ -148,14 +130,22 @@
 <body>
 
     <div class="container">
-        <div class="terminal-window">
+        <div class="border-line">|||||||||||||||||||||||||||||||||||||||||||||||||||</div>
+
+        <div class="header-block">
             <h1 id="greeting" class="typing-header">> Happy Birthday! ✨</h1>
         </div>
+
+        <div class="border-line">|||||||||||||||||||||||||||||||||||||||||||||||||||</div>
         
-        <button id="actionBtn" class="btn">_run letter.sh</button>
+        <div id="btnWrapper" class="btn-wrapper">
+            <button id="actionBtn" class="btn">[ Run execution_sequence.sh ]</button>
+        </div>
+
+        <div id="renderingLog" class="log-line">> Rendering a heartfelt message...</div>
+        <div id="successLog" class="log-line" style="color: #ffffff; font-weight: bold; margin-bottom: 15px;">> The birthday wishes are here:</div>
 
         <div id="letterBox" class="letter-box">
-            <div class="letter-line"><span class="accent-text">// Main Content</span></div>
             <div class="letter-line">Dear [Name],</div>
             <div class="letter-line">Write your heartfelt birthday message right here. Because this file lives in your private repository and runs locally on your machine, you can make this letter as personal or secret as you want!</div>
             <div class="letter-line">Wishing you the absolute best day ever.</div>
@@ -167,22 +157,36 @@
 
     <script>
         const greeting = document.getElementById('greeting');
+        const btnWrapper = document.getElementById('btnWrapper');
         const actionBtn = document.getElementById('actionBtn');
+        const renderingLog = document.getElementById('renderingLog');
+        const successLog = document.getElementById('successLog');
         const letterBox = document.getElementById('letterBox');
 
-        // Trigger typing effect instantly on load (No more popup!)
+        // Reveal run button when header typography steps finish
         window.addEventListener('DOMContentLoaded', () => {
-            // Smoothly reveal button after typing completes (2 seconds)
             setTimeout(() => {
-                actionBtn.classList.add('show-btn');
-                greeting.style.borderRight = "none"; /* Removes the cursor stamp at the end */
-            }, 2000);
+                btnWrapper.classList.add('show-btn');
+                greeting.style.borderRight = "none";
+            }, 1800);
         });
 
-        // Click event to unveil letter
+        // Trigger loading system state and sequence loops on execution click
         actionBtn.addEventListener('click', () => {
-            letterBox.classList.add('show');
-            actionBtn.style.display = 'none'; 
+            btnWrapper.style.display = 'none'; // Clear button link
+            renderingLog.style.display = 'block'; // Show processing text status
+            
+            // Step 1: Deliberate pause for simulation loop
+            setTimeout(() => {
+                renderingLog.style.display = 'none';
+                successLog.style.display = 'block'; // Complete notification text print
+                
+                // Step 2: Open and present letter box immediately after confirmation
+                setTimeout(() => {
+                    letterBox.style.display = 'block';
+                }, 400);
+
+            }, 1800); // 1.8-second loop delay for processing script effect
         });
     </script>
 
