@@ -1,272 +1,493 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal // Letter</title>
-    <style>
-        /* Monospace Terminal Styling */
-        body {
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-            background-color: #000000;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terminal // Birthday Letter</title>
+  <style>
+    :root {
+      --bg: #151515;
+      --terminal-bg: #0d0f12;
+      --terminal-top: #2b2b2b;
+      --terminal-border: rgba(255, 255, 255, 0.12);
+      --text: #f2f2f2;
+      --muted: #8b949e;
+      --green: #7ee787;
+      --cyan: #79c0ff;
+      --pink: #ffb3d9;
+      --yellow: #f2cc60;
+      --red: #ff5f57;
+      --orange: #ffbd2e;
+      --terminal-green: #28c840;
+    }
 
-        .container {
-            max-width: 550px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        /* --- PURE TEXT ASCII BORDERS --- */
-        .ascii-box {
-            width: 100%;
-            margin-bottom: 15px;
-        }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 179, 217, 0.16), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(121, 192, 255, 0.14), transparent 35%),
+        linear-gradient(135deg, #111111 0%, #202124 100%);
+    }
 
-        /* Top and bottom rows with literal + and - characters */
-        .ascii-edge {
-            display: flex;
-            color: #777777;
-            font-size: 1.1rem;
-            line-height: 1;
-        }
+    .terminal-window {
+      width: min(760px, 100%);
+      min-height: 560px;
+      border: 1px solid var(--terminal-border);
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--terminal-bg);
+      box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
 
-        /* This forces the dashes to perfectly fill the space without wrapping */
-        .dashes {
-            flex-grow: 1;
-            overflow: hidden;
-            white-space: nowrap;
-        }
+    .terminal-titlebar {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      background: linear-gradient(#393939, var(--terminal-top));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      user-select: none;
+    }
 
-        /* The vertical sides (|) */
-        .ascii-body {
-            border-left: 1.5px solid #777777; 
-            border-right: 1.5px solid #777777;
-            margin: 0 4px; /* Perfectly aligns the side walls with the center of the + corner */
-            padding: 15px 20px;
-        }
+    .window-controls {
+      display: flex;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
 
-        /* --- CUTE LETTER PAPER BORDERS --- */
-        .cute-edge {
-            color: #bbbbbb; /* Slightly brighter for the letter */
-        }
-        .cute-body {
-            border-color: #bbbbbb;
-            padding: 20px;
-        }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
 
-        /* Header Animation */
-        .typing-header {
-            font-size: 1.4rem;
-            font-weight: 400;
-            margin: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            border-right: 2px solid rgba(255, 255, 255, 0.75);
-            width: 0;
-            animation: 
-                typing-css 1.5s steps(22, end) forwards,
-                blink-cursor 0.75s step-end infinite;
-        }
+    .dot.red { background: var(--red); }
+    .dot.orange { background: var(--orange); }
+    .dot.green { background: var(--terminal-green); }
 
-        /* Action Button */
-        .btn-wrapper {
-            margin: 10px 0 20px 4px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
+    .title {
+      flex: 1;
+      text-align: center;
+      color: #c9d1d9;
+      font-size: 0.82rem;
+      letter-spacing: 0.2px;
+      transform: translateX(-30px);
+    }
 
-        .btn-wrapper.show-btn {
-            opacity: 1;
-        }
+    .terminal-body {
+      min-height: 516px;
+      padding: 22px;
+      overflow-y: auto;
+      line-height: 1.65;
+      font-size: 0.96rem;
+    }
 
-        .btn {
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            font-family: inherit;
-            font-size: 0.95rem;
-            cursor: pointer;
-            padding: 0;
-            text-decoration: underline;
-            letter-spacing: 0.5px;
-        }
+    .line {
+      min-height: 1.65em;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
 
-        .btn:hover {
-            color: #aaaaaa;
-        }
+    .muted { color: var(--muted); }
+    .green { color: var(--green); }
+    .cyan { color: var(--cyan); }
+    .pink { color: var(--pink); }
+    .yellow { color: var(--yellow); }
 
-        /* Logs */
-        .log-line {
-            font-size: 0.95rem;
-            color: #888888;
-            margin-bottom: 15px;
-            margin-left: 4px;
-            min-height: 1.2rem;
-            display: none; 
-        }
+    .prompt-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 1.65em;
+    }
 
-        .success-text {
-            color: #ffffff !important; 
-            font-weight: bold; 
-        }
+    .prompt {
+      color: var(--green);
+      flex: 0 0 auto;
+    }
 
-        /* Letter Content Layout */
-        .letter-box {
-            width: 100%;
-            line-height: 1.8;
-            color: #dddddd; 
-            font-size: 1.15rem; 
-        }
+    .typed-input {
+      color: var(--text);
+      min-width: 1ch;
+    }
 
-        .letter-line {
-            margin-bottom: 15px;
-            min-height: 1.5rem; 
-        }
+    .cursor {
+      display: inline-block;
+      width: 9px;
+      height: 1.15em;
+      transform: translateY(3px);
+      background: rgba(255, 255, 255, 0.85);
+      animation: blink 1s step-end infinite;
+    }
 
-        /* CSS Animations */
-        @keyframes typing-css {
-            from { width: 0 }
-            to { width: 100% }
-        }
+    .menu-card,
+    .letter-card,
+    .echo-card {
+      margin: 16px 0;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.035);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
 
-        @keyframes blink-cursor {
-            from, to { border-color: transparent }
-            50% { border-color: rgba(255, 255, 255, 0.75); }
-        }
+    .menu-card {
+      border-left: 3px solid var(--cyan);
+    }
 
-        /* Mobile Adjustments */
-        @media (max-width: 480px) {
-            .typing-header { font-size: 1.1rem; }
-            .letter-box { font-size: 1.05rem; }
-            .ascii-body { padding: 15px; }
-        }
-    </style>
+    .letter-card {
+      border-left: 3px solid var(--pink);
+      color: #f1d7e6;
+      line-height: 1.85;
+    }
+
+    .echo-card {
+      border-left: 3px solid var(--yellow);
+    }
+
+    .option {
+      color: var(--cyan);
+      margin: 4px 0;
+    }
+
+    .hint {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .letter-line {
+      min-height: 1.6em;
+      margin-bottom: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes blink {
+      0%, 45% { opacity: 1; }
+      46%, 100% { opacity: 0; }
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 12px;
+        align-items: flex-start;
+      }
+
+      .terminal-window {
+        min-height: calc(100vh - 24px);
+        border-radius: 14px;
+      }
+
+      .terminal-body {
+        padding: 16px;
+        font-size: 0.88rem;
+      }
+
+      .title {
+        text-align: left;
+        transform: none;
+        font-size: 0.72rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <main class="terminal-window" aria-label="Birthday terminal letter">
+    <header class="terminal-titlebar">
+      <div class="window-controls" aria-hidden="true">
+        <span class="dot red"></span>
+        <span class="dot orange"></span>
+        <span class="dot green"></span>
+      </div>
+      <div class="title">birthday-letter — zsh — 80x24</div>
+    </header>
 
-    <div class="container">
-        
-        <div class="ascii-box">
-            <div class="ascii-edge">
-                <span>+</span><span class="dashes">------------------------------------------------------------------------------------------</span><span>+</span>
-            </div>
-            
-            <div class="ascii-body">
-                <h1 id="greeting" class="typing-header">> Happy Birthday! ✨</h1>
-            </div>
-            
-            <div class="ascii-edge">
-                <span>+</span><span class="dashes">------------------------------------------------------------------------------------------</span><span>+</span>
-            </div>
-        </div>
-        
-        <div id="btnWrapper" class="btn-wrapper">
-            <button id="actionBtn" class="btn">[ > read_letter.sh ]</button>
-        </div>
+    <section id="terminal" class="terminal-body" aria-live="polite"></section>
+  </main>
 
-        <div id="renderingLog" class="log-line"></div>
+  <script>
+    const terminal = document.getElementById("terminal");
 
-        <div id="letterPaper" class="ascii-box" style="display: none;">
-            <div class="ascii-edge cute-edge">
-                <span>*</span><span class="dashes">------------------------------------------------------------------------------------------</span><span>*</span>
-            </div>
-            
-            <div class="ascii-body cute-body">
-                <div id="letterBox" class="letter-box"></div>
-            </div>
-            
-            <div class="ascii-edge cute-edge">
-                <span>*</span><span class="dashes">------------------------------------------------------------------------------------------</span><span>*</span>
-            </div>
-        </div>
-        
-    </div>
+    const state = {
+      mode: "booting",
+      input: "",
+      locked: true,
+      letterOpened: false
+    };
 
-    <script>
-        const greeting = document.getElementById('greeting');
-        const btnWrapper = document.getElementById('btnWrapper');
-        const actionBtn = document.getElementById('actionBtn');
-        const renderingLog = document.getElementById('renderingLog');
-        const letterPaper = document.getElementById('letterPaper');
-        const letterBox = document.getElementById('letterBox');
+    const letterContent = [
+      "Dear [Name],",
+      "Happy birthday, you lovely human ✨",
+      "I hope today feels soft, warm, and full of tiny happy surprises.",
+      "Thank you for being someone who makes ordinary days feel a little brighter.",
+      "May this year bring you more laughter, easier mornings, cozy nights, and dreams that quietly come true.",
+      "",
+      "With the biggest smile,",
+      "[Your Name]"
+    ];
 
-        // Edit your letter content here!
-        const letterContent = [
-            "Dear [Name],",
-            "Write your heartfelt birthday message right here.",
-            "Because this file lives in your private repository, you can make this letter as personal or secret as you want!",
-            "Wishing you the absolute best day ever.",
-            "",
-            "Best,",
-            "[Your Name]"
-        ];
+    const cuteReplies = [
+      "awww, message received. sending you a pocket-sized hug ♡",
+      "that was adorable. terminal is blushing now >///<",
+      "cute phrase detected. deploying extra sparkles ✨✨✨",
+      "noted. saving this sweetness to heart_cache.txt",
+      "reply: you are made of stardust and warm tea energy 🌙",
+      "beep boop. emotional support terminal is proud of you ♡"
+    ];
 
-        // Core typing logic
-        async function typeText(element, text, speed = 35) {
-            for (let i = 0; i < text.length; i++) {
-                element.innerHTML += text.charAt(i);
-                await new Promise(resolve => setTimeout(resolve, speed));
-            }
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function scrollToBottom() {
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function createLine(text = "", className = "line") {
+      const line = document.createElement("div");
+      line.className = className;
+      line.textContent = text;
+      terminal.appendChild(line);
+      scrollToBottom();
+      return line;
+    }
+
+    async function typeInto(element, text, speed = 18) {
+      for (const char of text) {
+        element.textContent += char;
+        scrollToBottom();
+        await sleep(speed);
+      }
+    }
+
+    async function typeLine(text = "", className = "line", speed = 18) {
+      const line = createLine("", className);
+      await typeInto(line, text, speed);
+      return line;
+    }
+
+    function showMenu() {
+      const menu = document.createElement("div");
+      menu.className = "menu-card";
+      menu.innerHTML = `
+        <div class="green">Birthday Terminal Menu</div>
+        <div class="option">[1] proceed</div>
+        <div class="option">[2] echo &lt;cute phrase&gt;</div>
+        <div class="option">[3] help</div>
+        <div class="hint">Type <span class="cyan">1</span> or <span class="cyan">proceed</span>, then press Enter. You can also type <span class="cyan">echo you are cute</span>.</div>
+      `;
+      terminal.appendChild(menu);
+      scrollToBottom();
+    }
+
+    function renderPrompt() {
+      removePrompt();
+
+      const row = document.createElement("div");
+      row.id = "activePrompt";
+      row.className = "prompt-line";
+      row.innerHTML = `
+        <span class="prompt">birthday@letter ~ %</span>
+        <span id="typedInput" class="typed-input"></span><span class="cursor" aria-hidden="true"></span>
+      `;
+      terminal.appendChild(row);
+      syncPromptText();
+      scrollToBottom();
+    }
+
+    function removePrompt() {
+      const existing = document.getElementById("activePrompt");
+      if (existing) existing.remove();
+    }
+
+    function syncPromptText() {
+      const typedInput = document.getElementById("typedInput");
+      if (typedInput) typedInput.textContent = state.input;
+    }
+
+    async function boot() {
+      state.locked = true;
+      await typeLine("Last login: today on ttys001", "line muted", 12);
+      await sleep(250);
+      await typeLine("> loading birthday_wishes.pkg", "line cyan", 18);
+      await sleep(250);
+      await typeLine("> status: ready to make someone smile", "line green", 18);
+      await sleep(350);
+      showMenu();
+      state.mode = "menu";
+      state.locked = false;
+      renderPrompt();
+    }
+
+    async function runProceed() {
+      if (state.letterOpened) {
+        await typeLine("Letter already opened. It is still glowing softly below ♡", "line yellow");
+        return;
+      }
+
+      state.locked = true;
+      await typeLine("> ./read_letter.sh", "line muted", 12);
+      await sleep(350);
+      await typeLine("> Rendering a heartfelt message...", "line cyan", 20);
+      await sleep(550);
+
+      const card = document.createElement("div");
+      card.className = "letter-card";
+      terminal.appendChild(card);
+      scrollToBottom();
+
+      for (const text of letterContent) {
+        if (!text) {
+          card.appendChild(document.createElement("br"));
+          await sleep(250);
+          continue;
         }
 
-        // 1. Reveal button when header is done typing
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                btnWrapper.classList.add('show-btn');
-                greeting.style.borderRight = "none";
-            }, 1600);
-        });
+        const line = document.createElement("div");
+        line.className = "letter-line";
+        card.appendChild(line);
+        await typeInto(line, text, 22);
+        await sleep(260);
+      }
 
-        // 2. Sequence triggered on button click
-        actionBtn.addEventListener('click', async () => {
-            // Hide the button link
-            btnWrapper.style.display = 'none';
-            
-            // Show the log and type the initial rendering message
-            renderingLog.style.display = 'block';
-            await typeText(renderingLog, "> Rendering a heartfelt message...", 35);
-            
-            // Brief pause before revealing the cute letter border
-            await new Promise(resolve => setTimeout(resolve, 600)); 
-            
-            // Reveal the cute paper border (empty at first)
-            letterPaper.style.display = 'block';
+      await sleep(350);
+      await typeLine("> The birthday wishes are here. Mission complete ✨", "line green", 18);
+      state.letterOpened = true;
+      state.locked = false;
+      renderPrompt();
+    }
 
-            // Loop through and type the actual letter line by line
-            for (let i = 0; i < letterContent.length; i++) {
-                if (letterContent[i] === "") {
-                    letterBox.appendChild(document.createElement('br'));
-                } else {
-                    const lineDiv = document.createElement('div');
-                    lineDiv.className = 'letter-line';
-                    letterBox.appendChild(lineDiv);
-                    
-                    // Type the letter text rapidly
-                    await typeText(lineDiv, letterContent[i], 25);
-                }
-                
-                // Small breath between sentences
-                await new Promise(resolve => setTimeout(resolve, 350));
-            }
+    async function runEcho(command) {
+      const phrase = command.replace(/^echo\s*/i, "").trim();
 
-            // 3. ONLY UPDATE LOG TEXT AFTER LETTER IS FULLY FINISHED
-            await new Promise(resolve => setTimeout(resolve, 500));
-            renderingLog.innerHTML = "> The birthday wishes are here:";
-            renderingLog.classList.add('success-text');
-        });
-    </script>
+      if (!phrase) {
+        await typeLine("Usage: echo <cute phrase>", "line yellow");
+        return;
+      }
 
+      const reply = cuteReplies[Math.floor(Math.random() * cuteReplies.length)];
+      const card = document.createElement("div");
+      card.className = "echo-card";
+      card.innerHTML = `
+        <div><span class="muted">you said:</span> <span class="pink"></span></div>
+        <div><span class="muted">terminal replied:</span> <span class="green"></span></div>
+      `;
+      terminal.appendChild(card);
+
+      const spans = card.querySelectorAll("span.pink, span.green");
+      await typeInto(spans[0], phrase, 18);
+      await sleep(220);
+      await typeInto(spans[1], reply, 18);
+    }
+
+    async function showHelp() {
+      await typeLine("Available commands:", "line green");
+      await typeLine("  1 / proceed          Open the birthday letter", "line muted", 8);
+      await typeLine("  echo <cute phrase>   Say something cute and get a cute reply", "line muted", 8);
+      await typeLine("  menu                 Show the menu again", "line muted", 8);
+      await typeLine("  clear                Clear the terminal", "line muted", 8);
+      await typeLine("  help                 Show this help text", "line muted", 8);
+    }
+
+    async function handleCommand(rawCommand) {
+      const command = rawCommand.trim();
+      const normalized = command.toLowerCase();
+
+      if (!command) return;
+
+      if (normalized === "1" || normalized === "proceed") {
+        await runProceed();
+        return;
+      }
+
+      if (normalized.startsWith("echo")) {
+        await runEcho(command);
+        return;
+      }
+
+      if (normalized === "2") {
+        await typeLine("Try: echo you are my favorite person", "line yellow");
+        return;
+      }
+
+      if (normalized === "3" || normalized === "help") {
+        await showHelp();
+        return;
+      }
+
+      if (normalized === "menu") {
+        showMenu();
+        return;
+      }
+
+      if (normalized === "clear") {
+        terminal.innerHTML = "";
+        showMenu();
+        return;
+      }
+
+      await typeLine(`command not found: ${command}`, "line yellow");
+      await typeLine("Type help to see available commands.", "line muted", 8);
+    }
+
+    document.addEventListener("keydown", async event => {
+      if (state.locked) return;
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const command = state.input;
+        state.input = "";
+
+        removePrompt();
+        createLine(`birthday@letter ~ % ${command}`, "line");
+
+        state.locked = true;
+        await handleCommand(command);
+        state.locked = false;
+
+        if (!document.getElementById("activePrompt")) {
+          renderPrompt();
+        }
+        return;
+      }
+
+      if (event.key === "Backspace") {
+        event.preventDefault();
+        state.input = state.input.slice(0, -1);
+        syncPromptText();
+        return;
+      }
+
+      if (event.key.length === 1 && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault();
+        state.input += event.key;
+        syncPromptText();
+      }
+    });
+
+    terminal.addEventListener("click", () => {
+      renderPrompt();
+    });
+
+    boot();
+  </script>
 </body>
 </html>
-
