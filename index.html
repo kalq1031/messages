@@ -357,14 +357,13 @@
     // Letter content is Base64-encoded so the plain text is not directly visible in the source.
     // This is playful obfuscation, not cryptographic security.
     const encodedLetter = [
-      "RGVhciBbTmFtZV0s",
-      "SGFwcHkgYmlydGhkYXksIHlvdSBsb3ZlbHkgaHVtYW4g4pyo",
-      "SSBob3BlIHRvZGF5IGZlZWxzIHNvZnQsIHdhcm0sIGFuZCBmdWxsIG9mIHRpbnkgaGFwcHkgc3VycHJpc2VzLg==",
-      "VGhhbmsgeW91IGZvciBiZWluZyBzb21lb25lIHdobyBtYWtlcyBvcmRpbmFyeSBkYXlzIGZlZWwgYSBsaXR0bGUgYnJpZ2h0ZXIu",
-      "TWF5IHRoaXMgeWVhciBicmluZyB5b3UgbW9yZSBsYXVnaHRlciwgZWFzaWVyIG1vcm5pbmdzLCBjb3p5IG5pZ2h0cywgYW5kIGRyZWFtcyB0aGF0IHF1aWV0bHkgY29tZSB0cnVlLg==",
-      "",
-      "V2l0aCB0aGUgYmlnZ2VzdCBzbWlsZSw=",
-      "W1lvdXIgTmFtZV0="
+      "SGFwcHkgQmlydGhkYXkh",
+      "VGhhbmsgeW91IGZvciB0aGUgcGFzdCAyIG1vbnRocyEgR2V0dGluZyBjbG9zZSB0byB5b3UgaGFkIGJyb3VnaHQgbWFueSBpbnRlcmVzdGluZyBleHBlcmllbmNlcyBpbiBteSBsaWZlLiBZb3UgbWFrZSBtZSBmZWVsIHlvdW5nIGFnYWluICh1bmV4cGVjdGVkbHkp",
+      "VG8gbWUsIHlvdSBjYW4gYmUgYSBiaWcgdGVhc2VyLCBzb21ldGltZXMgbWVhbiwgYnV0IGl0J3Mgc28gZnVuIHRvIGJlIHdpdGggeW91LiBZb3UgYXJlIGNhbG0sIGFuZCBmdW5uaWx5IGVub3VnaCwgeW91IGtub3cgaG93IHRvIGNvbWZvcnQgbWUgYmV0dGVyIHRoYW4gbWUgY29tZm9ydGluZyBteXNlbGYuIFlvdSBhcmUgc28gZGlmZmVyZW50Lg==",
+      "SSBrbm93IG9ubHkgZ29vZCB0aGluZ3MgYXJlIGNvbWluZyB5b3VyIHdheS4gSSBob3BlIHlvdSBnZXQgdG8gbGl2ZSB0aGUgZnVsZmlsbGluZywgYW1iaXRpb3VzIGxpZmUgeW91IHdhbnQgd2l0aG91dCBhbnkgcmVncmV0cy4gRW5qb3kgZXZlcnkgc3RlcCBhbmQgc3RheSBpbiB0aGUgcHJlc2VudCB3aGlsZSBjaGFzaW5nIHRob3NlIGxvbmctdGVybSBnb2Fscywgb2theSEgTWF5IHRoaXMgdXBjb21pbmcgeWVhciBicmluZyB5b3Ugc28gbXVjaCBqb3ksIGdvb2QgZm9vZCwgYW5kIHBsZW50eSBvZiBleGNpdGVtZW504oCUaWRlYWxseSBhd2F5IGZyb20gdGhlIGdhbWJsaW5nIHRhYmxlcyE=",
+      "WW91IHRhdWdodCBtZSB0byB0YWtlIHRoaW5ncyBzbG93LCB0byBlbmpveSB0aGUgbW9tZW50IGFuZCBlbWJyYWNlIHVuY2VydGFpbnR5LiBJIGhhdmUgbWFueSBmbGF3cyBidXQgeW91IHN0aWxsIGNob29zZSB0byBtYWtlIHNvbWUgbWVtb3JpZXMsIGFuZCBjYXJlIGZvciBtZS4gVGhhbmsgeW91LiBJIGhvcGUgeW91IHdpbGwgYmUgYXMga2luZCB0byB5b3Vyc2VsZiwgbXVjaCBtb3JlIHRoYW4geW91IGNhcmUgYWJvdXQgbWUh",
+      "Rm9yIG1hbnkgeWVhcnMgb2YgZnJpZW5kc2hpcCBhaGVhZCwgZG9uJ3QgZm9yZ2V0IG1lICEgSSdsbCBiZSBoZXJlIGFzIHlvdXIgKGdpcmwpIGZyaWVuZCB3aGVuZXZlciB5b3UgbmVlZCBtZSwgSSdsbCBiZSB5b3VyIGhlbHAgaWYgSSBjYW4gaGVscCAh",
+      "Rm9yIHlvdXIgaGFwcGluZXNzLiBJIGhvcGUgeW91IGZpbmQgdGhlIGxvdmUgb2YgeW91ciBsaWZlLiBBbmQgdG8gbGl2ZSBhIGxvbmcgbGlmZSwgbWFrZSBzdXJlIHlvdSBvdXRsaXZlIG1lIQ=="
     ];
 
     // Riddle facts: day = 31, month = 5, age = 27, name length = 9.
@@ -468,7 +467,7 @@
     }
 
     async function renderBirthdayBanner() {
-      await typeLine("> good job, you got it right🥰🎉", "line pink", 18);
+      await typeLine("> generating birthday banner...", "line pink", 18);
       await sleep(250);
 
       const banner = document.createElement("pre");
@@ -578,7 +577,7 @@
       const card = document.createElement("pre");
       card.className = "riddle-card";
       card.textContent = [
-        "╔═══ answer_this.ok ═════════════════════════════╗",
+        "╔═══ restore_hint.c ═════════════════════════════╗",
         "│ The passkey is hidden in four constants.       │",
         "│                                                │",
         "│ Start with the day you arrived,                │",
@@ -611,7 +610,7 @@
       await sleep(350);
       await renderBirthdayBanner();
       await sleep(450);
-      await typeLine("> decrypting bday_msg.txt...", "line cyan", 20);
+      await typeLine("> decrypting bday_msg.enc...", "line cyan", 20);
       await sleep(550);
 
       const card = document.createElement("div");
@@ -643,7 +642,7 @@
       appendBoxLine(card, "╚════════════════════════════════════════════════╝", "box-line box-border");
 
       await sleep(350);
-      await typeLine("> Happy birthday, have a great day✨", "line green", 18);
+      await typeLine("> The birthday wishes are here. Mission complete ✨", "line green", 18);
       await sleep(300);
       await typeLine("exited 0", "line muted", 18);
       state.letterOpened = true;
