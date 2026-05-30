@@ -359,7 +359,7 @@
     const encodedLetter = [
       "SGFwcHkgQmlydGhkYXkh",
       "VGhhbmsgeW91IGZvciB0aGUgcGFzdCAyIG1vbnRocyEgR2V0dGluZyBjbG9zZSB0byB5b3UgaGFkIGJyb3VnaHQgbWFueSBpbnRlcmVzdGluZyBleHBlcmllbmNlcyBpbiBteSBsaWZlLiBZb3UgbWFrZSBtZSBmZWVsIHlvdW5nIGFnYWluICh1bmV4cGVjdGVkbHkp",
-      "VG8gbWUsIHlvdSBjYW4gYmUgYSBiaWcgdGVhc2VyLCBzb21ldGltZXMgbWVhbiwgYnV0IGl0J3Mgc28gZnVuIHRvIGJlIHdpdGggeW91LiBZb3UgYXJlIGNhbG0sIGFuZCBmdW5uaWx5IGVub3VnaCwgeW91IGtub3cgaG93IHRvIGNvbWZvcnQgbWUgYmV0dGVyIHRoYW4gbWUgY29tZm9ydGluZyBteXNlbGYuIFlvdSBhcmUgc28gZGlmZmVyZW50Lg==",
+      "VG8gbWUsIHlvdSBjYW4gYmUgYSBiaWcgdGVhc2VyLCBzb21ldGltZXMgbWVhbiwgYnV0IGl0J3Mgc28gZnVuIHRvIGJlIHdpdGggeW91LiBZb3UgYXJlIGNhbG0sIGFuZCBmdW5uaWx5IGVub3VnaCwgeW91IGtub3cgaG93IHRvIGNvbWZvcnQgbWUgYmV0dGVyIHRoYW4gbWUgY29tZm9ydGluZyBteXNlbGYu",
       "SSBrbm93IG9ubHkgZ29vZCB0aGluZ3MgYXJlIGNvbWluZyB5b3VyIHdheS4gSSBob3BlIHlvdSBnZXQgdG8gbGl2ZSB0aGUgZnVsZmlsbGluZywgYW1iaXRpb3VzIGxpZmUgeW91IHdhbnQgd2l0aG91dCBhbnkgcmVncmV0cy4gRW5qb3kgZXZlcnkgc3RlcCBhbmQgc3RheSBpbiB0aGUgcHJlc2VudCB3aGlsZSBjaGFzaW5nIHRob3NlIGxvbmctdGVybSBnb2Fscywgb2theSEgTWF5IHRoaXMgdXBjb21pbmcgeWVhciBicmluZyB5b3Ugc28gbXVjaCBqb3ksIGdvb2QgZm9vZCwgYW5kIHBsZW50eSBvZiBleGNpdGVtZW504oCUaWRlYWxseSBhd2F5IGZyb20gdGhlIGdhbWJsaW5nIHRhYmxlcyE=",
       "WW91IHRhdWdodCBtZSB0byB0YWtlIHRoaW5ncyBzbG93LCB0byBlbmpveSB0aGUgbW9tZW50IGFuZCBlbWJyYWNlIHVuY2VydGFpbnR5LiBJIGhhdmUgbWFueSBmbGF3cyBidXQgeW91IHN0aWxsIGNob29zZSB0byBtYWtlIHNvbWUgbWVtb3JpZXMsIGFuZCBjYXJlIGZvciBtZS4gVGhhbmsgeW91LiBJIGhvcGUgeW91IHdpbGwgYmUgYXMga2luZCB0byB5b3Vyc2VsZiwgbXVjaCBtb3JlIHRoYW4geW91IGNhcmUgYWJvdXQgbWUh",
       "Rm9yIG1hbnkgeWVhcnMgb2YgZnJpZW5kc2hpcCBhaGVhZCwgZG9uJ3QgZm9yZ2V0IG1lICEgSSdsbCBiZSBoZXJlIGFzIHlvdXIgKGdpcmwpIGZyaWVuZCB3aGVuZXZlciB5b3UgbmVlZCBtZSwgSSdsbCBiZSB5b3VyIGhlbHAgaWYgSSBjYW4gaGVscCAh",
@@ -515,14 +515,28 @@
       return lines;
     }
 
-    function frameLine(text = "", width = 46) {
-      return `│ ${text.padEnd(width, " ")} │`;
+    function makeBorder(title, width = 58) {
+      const titleText = ` ${title} `;
+      const remaining = Math.max(width - titleText.length, 0);
+      return `╔═══${titleText}${"═".repeat(remaining)}`;
     }
 
-    async function typeFramedLine(parent, text, width = 46) {
+    function makeDivider(width = 58) {
+      return `├${"─".repeat(width + 4)}`;
+    }
+
+    function makeBottomBorder(width = 58) {
+      return `╚${"═".repeat(width + 4)}`;
+    }
+
+    function frameLine(text = "") {
+      return text ? `│ ${text}` : "│";
+    }
+
+    async function typeFramedLine(parent, text) {
       const line = appendBoxLine(parent, "│ ", "box-line");
       await typeInto(line, text, 22);
-      line.textContent = frameLine(text, width);
+      line.textContent = frameLine(text);
       scrollToBottom();
     }
 
@@ -618,28 +632,28 @@
       terminal.appendChild(card);
       scrollToBottom();
 
-      const frameWidth = 46;
-      appendBoxLine(card, "╔═══ bday_msg.txt ═══════════════════════════════╗", "box-line box-border");
-      appendBoxLine(card, frameLine("MESSAGE", frameWidth), "box-line box-title");
-      appendBoxLine(card, frameLine("", frameWidth), "box-line box-border");
+      const frameWidth = 58;
+      appendBoxLine(card, makeBorder("bday_msg.txt", frameWidth), "box-line box-border");
+      appendBoxLine(card, frameLine("MESSAGE"), "box-line box-title");
+      appendBoxLine(card, makeDivider(frameWidth), "box-line box-border");
 
       const letterContent = getLetterContent();
 
       for (const text of letterContent) {
         if (!text) {
-          appendBoxLine(card, frameLine("", frameWidth), "box-line");
+          appendBoxLine(card, frameLine(""), "box-line");
           await sleep(250);
           continue;
         }
 
         const wrappedLines = wrapText(text, frameWidth);
         for (const wrappedLine of wrappedLines) {
-          await typeFramedLine(card, wrappedLine, frameWidth);
+          await typeFramedLine(card, wrappedLine);
         }
         await sleep(260);
       }
 
-      appendBoxLine(card, "╚════════════════════════════════════════════════╝", "box-line box-border");
+      appendBoxLine(card, makeBottomBorder(frameWidth), "box-line box-border");
 
       await sleep(350);
       await typeLine("> The birthday wishes are here. Mission complete ✨", "line green", 18);
